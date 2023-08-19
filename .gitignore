@@ -1,0 +1,7 @@
+**/.cache
+**/CMakeFiles
+**/CMakeCache.txt
+*.json
+**/Makefile
+*.cmake
+run_*

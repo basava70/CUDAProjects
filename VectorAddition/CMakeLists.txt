@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+project(run_vector_addition LANGUAGES CXX CUDA)
+enable_language(CUDA)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_executable(run_vector_addition vector_addition.cu)
+set_property(TARGET run_vector_addition PROPERTY CUDA_ARCHITECTURES "50;72")
