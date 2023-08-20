@@ -69,6 +69,7 @@ int main() {
   b_h = (float *)malloc(size);
   c_h = (float *)malloc(size);
 
+  // measuring time for the gpu version
   auto begin_gpu = std::chrono::high_resolution_clock::now();
   vecAdd(a_h, b_h, c_h, n);
   auto end_gpu = std::chrono::high_resolution_clock::now();
@@ -79,6 +80,7 @@ int main() {
                    .count()
             << std::endl;
 
+  // measuring time for the cpu version
   auto begin_cpu = std::chrono::high_resolution_clock::now();
   vecAddCPU(a_h, b_h, c_h, n);
   auto end_cpu = std::chrono::high_resolution_clock::now();
