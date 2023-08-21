@@ -32,6 +32,10 @@ void printKernelData(dim3 blockDim, dim3 gridDim) {
             << gridDim.z << ") " << std::endl;
 }
 
+/**
+ * Function to load the input image and returns the number of
+ * total pixels
+ **/
 int loadImage(std::string input_file, size_t *rows, size_t *cols) {
   cv::Mat image;
   image = cv::imread(input_file.c_str(), cv::IMREAD_COLOR);
@@ -59,6 +63,9 @@ int loadImage(std::string input_file, size_t *rows, size_t *cols) {
   return num_of_pixels;
 }
 
+/**
+ * Kernel for color changing via cuda
+ **/
 __global__ void convertRGBToGrayGPUKernel(unsigned char *rgb,
                                           unsigned char *gray, size_t rows,
                                           size_t cols) {
@@ -78,6 +85,13 @@ __global__ void convertRGBToGrayGPUKernel(unsigned char *rgb,
   }
 }
 
+/**
+ * Utility for the gpu of color conversion to gray.
+ * Creating and allocating memory in device.
+ * Copying the memory to device from host
+ * and send it to the kernel and copy it back to
+ * host. Free the memory after.
+ **/
 void convertRGBToGrayGPU(unsigned char *image_rgb_h,
                          unsigned char *image_gray_h, const size_t total_pixels,
                          const size_t rows, const size_t cols,
@@ -113,6 +127,10 @@ void convertRGBToGrayGPU(unsigned char *image_rgb_h,
   cudaErrorCheck(cudaMemcpy(image_gray_h, image_gray_d,
                             total_pixels * sizeof(unsigned char),
                             cudaMemcpyDeviceToHost));
+
+  // free memory in gpu
+  cudaFree(image_rgb_d);
+  cudaFree(image_gray_d);
 }
 
 void outputImage(unsigned char *gray, const std::string output_file,
@@ -161,6 +179,7 @@ int main(int argc, char **argv) {
   std::cout << " total_pixels : " << total_pixels << std::endl;
   std::cout << "--------------------------" << std::endl;
 
+  // show the original image
   cv::Mat output(rows, cols, CV_8UC3, (void *)image_rgb_h);
   cv::imwrite(output_file.c_str(), output);
   cv::imshow("rgb_h", output);
@@ -174,6 +193,10 @@ int main(int argc, char **argv) {
                       true);
 
   outputImage(image_gray_h, output_file, rows, cols);
+
+  // free cpu memory
+  free(image_rgb_h);
+  free(image_gray_h);
 
   return 0;
 }
