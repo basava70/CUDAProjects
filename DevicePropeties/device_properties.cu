@@ -17,6 +17,8 @@ int main() {
               << std::endl;
     std::cout << " Max Threads per Block: " << prop.maxThreadsPerBlock
               << std::endl;
+    std::cout << " Max Blocks per MultiProcessor: "
+              << prop.maxBlocksPerMultiProcessor << std::endl;
     std::cout << " Memory Clock Rate (kHz): " << prop.memoryClockRate
               << std::endl;
     std::cout << " Memory Bus Width (bits): " << prop.memoryBusWidth

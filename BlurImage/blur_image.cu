@@ -202,6 +202,8 @@ void gpuBlur(unsigned char *blurred_image_h, const int filter_size,
   const dim3 grid_dimesions(ceil(float(rows) / threads_per_block),
                             ceil(float(cols) / threads_per_block));
 
+  printKernelData(block_dimensions, grid_dimesions);
+
   // Calling the GPU kernel to seperate all the three channels parallely
   seperateColors<<<grid_dimesions, block_dimensions>>>(red_d, green_d, blue_d,
                                                        image_rgb_d, rows, cols);
