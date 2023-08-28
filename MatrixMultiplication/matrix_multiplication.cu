@@ -30,12 +30,13 @@
  *
  **/
 
+#include <chrono>
 #include <cstddef>
 #include <iostream>
 #include <stdio.h>
 #include <time.h>
 
-size_t row_A = 512, row_B = 512, col_A = 512, col_B = 512;
+size_t row_A = 512, row_B = 1024, col_A = 1024, col_B = 512;
 // size_t row_A = 3, row_B = 3, col_A = 3, col_B = 3;
 
 // Error handling
@@ -147,7 +148,7 @@ void cpuMatrixMultiplication(const int *A, const int *B, int *C) {
 void error_check(const int *C_h, const int *C_d) {
   const double tolerance = 1e-4;
   for (size_t i = 0; i < row_A; i++) {
-    for (size_t j = 0; j < row_A; j++) {
+    for (size_t j = 0; j < col_B; j++) {
       if (C_h[j * col_B + i] - C_d[j * col_B + i] > tolerance) {
         std::cout << "Error C_cpu(" << i << ", " << j
                   << ") = " << C_h[j * col_B + i] << " and C_gpu(" << i << ", "
@@ -158,14 +159,14 @@ void error_check(const int *C_h, const int *C_d) {
   }
 }
 
-void print_matrix(const int *A) {
-  for (size_t i = 0; i < row_A; i++) {
-    for (size_t j = 0; j < row_A; j++) {
-      std::cout << " " << A[j * row_A + i];
-    }
-    std::cout << std::endl;
-  }
-}
+// void print_matrix(const int *A) {
+//   for (size_t i = 0; i < row_A; i++) {
+//     for (size_t j = 0; j < col_B; j++) {
+//       std::cout << " " << A[j * row_A + i];
+//     }
+//     std::cout << std::endl;
+//   }
+// }
 
 int main() {
 
@@ -176,9 +177,25 @@ int main() {
 
   initialize_data(&A[0], &B[0], &C_cpu[0], C_gpu);
 
+  auto begin_gpu = std::chrono::high_resolution_clock::now();
   gpuMatrixMultiplication(&A[0], &B[0], C_gpu);
+  auto end_gpu = std::chrono::high_resolution_clock::now();
 
+  std::cout << "Time elapsed for gpu is: "
+            << std::chrono::duration_cast<std::chrono::microseconds>(end_gpu -
+                                                                     begin_gpu)
+                   .count()
+            << " micro seconds " << std::endl;
+
+  auto begin_cpu = std::chrono::high_resolution_clock::now();
   cpuMatrixMultiplication(&A[0], &B[0], &C_cpu[0]);
+  auto end_cpu = std::chrono::high_resolution_clock::now();
+
+  std::cout << "Time elapsed for cpu is: "
+            << std::chrono::duration_cast<std::chrono::microseconds>(end_cpu -
+                                                                     begin_cpu)
+                   .count()
+            << " micro seconds " << std::endl;
 
   /* std::cout << " A =" << std::endl;
   print_matrix(&A[0]);
@@ -190,6 +207,10 @@ int main() {
   print_matrix(C_gpu); */
 
   error_check(&C_cpu[0], &C_gpu[0]);
+
+  std::cout << " ------------------------ " << std::endl;
+  std::cout << " ------- Success -------- " << std::endl;
+  std::cout << " ------------------------ " << std::endl;
 
   free(C_gpu);
 
