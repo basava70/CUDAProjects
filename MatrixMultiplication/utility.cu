@@ -1,6 +1,7 @@
 
 #include <iostream>
 
+/* ---------------------------------------------------------------- */
 // Error handling
 void cudaErrorCheck(cudaError_t error, bool abort = true) {
   if (error != cudaSuccess) {
@@ -11,6 +12,7 @@ void cudaErrorCheck(cudaError_t error, bool abort = true) {
   }
 }
 
+/* ---------------------------------------------------------------- */
 void printKernelData(dim3 blockDim, dim3 gridDim) {
   std::cout << "blockDim(x, y, z) : (" << blockDim.x << ", " << blockDim.y
             << ", " << blockDim.z << ") " << std::endl;
@@ -18,12 +20,14 @@ void printKernelData(dim3 blockDim, dim3 gridDim) {
             << gridDim.z << ") " << std::endl;
 }
 
+/* ---------------------------------------------------------------- */
 // Initialize the matrices A and B randomly between -50 to 50
 void initialize_data(int *A, int *B, int *C_cpu, int *C_gpu, const size_t row_A,
                      const size_t row_B, const size_t col_B) {
 
   // Initialize to a random seed
-  srand((unsigned)time(NULL));
+  // srand((unsigned)time(NULL));
+  srand(1);
   for (size_t i = 0; i < row_A; i++) {
     for (size_t j = 0; j < row_B; j++) {
       A[i * row_B + j] = (rand() % 10);
@@ -44,6 +48,8 @@ void initialize_data(int *A, int *B, int *C_cpu, int *C_gpu, const size_t row_A,
   }
 }
 
+/* ---------------------------------------------------------------- */
+// Checking error for the gpu and cpu code
 void error_check(const int *C_h, const int *C_d, const size_t row_A,
                  const size_t col_B) {
   const double tolerance = 1e-4;
@@ -59,6 +65,7 @@ void error_check(const int *C_h, const int *C_d, const size_t row_A,
   }
 }
 
+/* ---------------------------------------------------------------- */
 void print_matrix(const int *A, const size_t row_A, const size_t col_A) {
   for (size_t i = 0; i < row_A; i++) {
     std::cout << "|";

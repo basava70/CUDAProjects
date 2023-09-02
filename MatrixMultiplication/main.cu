@@ -30,8 +30,8 @@
  *
  **/
 
+/* ---------------------------------------------------------------- */
 #include <chrono>
-#include <cstdlib>
 #include <iostream>
 
 void initialize_data(int *A, int *B, int *C_cpu, int *C_gpu, const size_t row_A,
@@ -46,13 +46,23 @@ void gpuMatrixMultiplication(const int *A, const int *B, int *C,
                              const size_t row_A, const size_t row_B,
                              const size_t col_B);
 
+void gpuTiledMatrixMultiplication(const int *A, const int *B, int *C,
+                                  const size_t row_A, const size_t row_B,
+                                  const size_t col_B);
+
 void cpuMatrixMultiplication(const int *A, const int *B, int *C,
                              const size_t row_A, const size_t row_B,
                              const size_t col_B);
 
+__global__ void testKernel() {}
+
+/* ---------------------------------------------------------------- */
 int main() {
 
   const size_t row_A = 1024, row_B = 2048, col_A = 2048, col_B = 1024;
+  // const size_t row_A = 4, row_B = 4, col_A = 4, col_B = 4;
+  // const size_t row_A = 3, row_B = 2, col_A = 2, col_B = 3;
+  // const size_t row_A = 512, row_B = 512, col_A = 512, col_B = 512;
 
   int *A, *B, *C_cpu, *C_gpu;
   A = (int *)malloc(row_A * col_A * sizeof(int));
@@ -68,23 +78,17 @@ int main() {
   std::cout << " ----------------------------- " << std::endl;
   std::cout << " --- Matrix Multiplication --- " << std::endl;
   std::cout << " ----------------------------- " << std::endl;
-  std::cout << " row_A : " << row_A << " col_A : " << col_A << std::endl;
-  std::cout << " row_B : " << row_B << " col_B : " << col_B << std::endl;
-  std::cout << " row_C : " << row_A << " col_C : " << col_B << std::endl;
+  std::cout << " A : " << row_A << " X " << col_A << std::endl;
+  std::cout << " B : " << row_B << " X " << col_B << std::endl;
+  std::cout << " C : " << row_A << " X " << col_B << std::endl;
+
+  // First kernel always takes more time
+  // so calling a dummy kernel before
+  testKernel<<<1, 1>>>();
 
   initialize_data(A, B, C_cpu, C_gpu, row_A, row_B, col_B);
 
-  auto begin_gpu = std::chrono::high_resolution_clock::now();
-  gpuMatrixMultiplication(A, B, C_gpu, row_A, row_B, col_B);
-  auto end_gpu = std::chrono::high_resolution_clock::now();
-
-  std::cout << "Time elapsed for gpu is: "
-            << std::chrono::duration_cast<std::chrono::microseconds>(end_gpu -
-                                                                     begin_gpu)
-                       .count() /
-                   1e6
-            << " seconds " << std::endl;
-
+  // cpu matrix multiplication
   auto begin_cpu = std::chrono::high_resolution_clock::now();
   cpuMatrixMultiplication(A, B, C_cpu, row_A, row_B, col_B);
   auto end_cpu = std::chrono::high_resolution_clock::now();
@@ -92,6 +96,32 @@ int main() {
   std::cout << "Time elapsed for cpu is: "
             << std::chrono::duration_cast<std::chrono::microseconds>(end_cpu -
                                                                      begin_cpu)
+                       .count() /
+                   1e6
+            << " seconds " << std::endl;
+
+  // Basic gpu matrix multiplication
+  auto begin_gpu = std::chrono::high_resolution_clock::now();
+  gpuMatrixMultiplication(A, B, C_gpu, row_A, row_B, col_B);
+  auto end_gpu = std::chrono::high_resolution_clock::now();
+
+  std::cout << "Time elapsed for basic gpu is: "
+            << std::chrono::duration_cast<std::chrono::microseconds>(end_gpu -
+                                                                     begin_gpu)
+                       .count() /
+                   1e6
+            << " seconds " << std::endl;
+
+  error_check(C_cpu, C_gpu, row_A, col_B);
+
+  // Tiled gpu matrix multiplication
+  auto begin_tiled_gpu = std::chrono::high_resolution_clock::now();
+  gpuTiledMatrixMultiplication(A, B, C_gpu, row_A, row_B, col_B);
+  auto end_tiled_gpu = std::chrono::high_resolution_clock::now();
+
+  std::cout << "Time elapsed for tiled gpu is: "
+            << std::chrono::duration_cast<std::chrono::microseconds>(
+                   end_tiled_gpu - begin_tiled_gpu)
                        .count() /
                    1e6
             << " seconds " << std::endl;
@@ -107,9 +137,9 @@ int main() {
 
   error_check(C_cpu, C_gpu, row_A, col_B);
 
-  std::cout << " ------------------------ " << std::endl;
-  std::cout << " ------- Success -------- " << std::endl;
-  std::cout << " ------------------------ " << std::endl;
+  std::cout << " ----------------------------- " << std::endl;
+  std::cout << " ---- Error checking done ---- " << std::endl;
+  std::cout << " ----------------------------- " << std::endl;
 
   // free the variables
   free(A);
