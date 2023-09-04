@@ -14,18 +14,18 @@ Following are a collection of some of my cuda projects.
   - Square Matrices
     | Matrix dimensions | CPU (seconds) | GPU Basic (seconds)  | GPU Tiled (seconds) |
     | :----: | :----:| :----: | :----:|
-    |16 X 16 | 10<sup>-5</sup> | 3.08*10<sup> -4 </sup>| 2.2*10<sup> -4 </sup>|
-    |64 X 64 | 6.09*10<sup>-4</sup> |3.19*10<sup>-4</sup> |2.31*10<sup>-4</sup> |
-    |512 X 512 | 3.49*10<sup>-1</sup> | 2.846 * 10 <sup> -3</sup> | 1.015* 10<sup>-3 </sup> |
-    |2048 X 2048 |139.332  | 1.33 *10<sup> -1 </sup> |2.06*10<sup>-2 </sup> |
+    |16 X 16 | 9*10<sup>-4</sup> | 2.6*10<sup> -4 </sup>| 2.3*10<sup> -4 </sup>|
+    |64 X 64 | 6.2*10<sup>-4</sup> |3.1*10<sup>-4</sup> |2.4*10<sup>-4</sup> |
+    |512 X 512 | 3.45*10<sup>-1</sup> | 2.8 * 10 <sup> -3</sup> | 1.6* 10<sup>-3 </sup> |
+    |2048 X 2048 |1.49*10<sup>2</sup>  | 1.32 *10<sup> -1 </sup> |5.7*10<sup>-2 </sup> |
 
   - Rectangular Matrices
     | A dim| B dim |C dim| CPU (seconds)  | GPU Basic (seconds)  | GPU Tiled (seconds)  |
      | :----: | :----:| :----: | :----:| :----: | :----: |
-    |64 X 128 | 128 X 64 | 64 X 64| 1.2*10<sup>-3</sup> |3.51*10<sup>-4</sup> | 2.32*10<sup> -4</sup> |
-    |512 X 256 | 256 X 512 |512 X 512 |1.7 * 10<sup> -1</sup> |1.67 * 10<sup> -3 </sup> |  6.85*10<sup>-4</sup> |
-    |1024 X 2048| 2048 x 1024|1024 X 1024| 2.9 *10<sup>1</sup> | 5.37 *10 <sup> -2 </sup> | 7.869 * 10 <sup> -3</sup> |
-    | 1024 X 2048| 2048 X 728| 1024 X 728| 4.34 |2.23 * 10<sup>-2</sup> |5.28*10 <sup> -3</sup> |
+    |64 X 128 | 128 X 64 | 64 X 64| 1.2*10<sup>-3</sup> |3.4*10<sup>-4</sup> | 2.7*10<sup> -4</sup> |
+    |512 X 256 | 256 X 512 |512 X 512 |1.7 * 10<sup> -1</sup> |1.6 * 10<sup> -3 </sup> |  9.2*10<sup>-4</sup> |
+    |1024 X 2048| 2048 x 1024|1024 X 1024| 2.85 *10<sup>1</sup> | 4.25 *10 <sup> -2 </sup> | 1.65 * 10 <sup> -2</sup> |
+    | 1024 X 2048| 2048 X 728| 1024 X 728| 3.78 |2.2 * 10<sup>-2</sup> |1.1*10 <sup> -2</sup> |
 
 ### 4. Future Projects
  - Merging
