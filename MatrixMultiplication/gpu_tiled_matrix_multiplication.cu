@@ -65,23 +65,23 @@ __global__ void gpuTiledKernel(const int *A, const int *B, int *C,
   int value = 0;
   // Adding boundary conditions
   for (size_t ph = 0; ph < ceil(row_B / (float)TILEWIDTH); ph++) {
-    if ((idy < row_A) && (ph * TILEWIDTH + tx) < row_B)
-      Ad[ty][tx] = A[idy * row_B + tx + ph * TILEWIDTH];
+    if ((idx < row_A) && ((ph * TILEWIDTH + ty) < row_B))
+      Ad[tx][ty] = A[idx * row_B + ty + ph * TILEWIDTH];
     else
-      Ad[ty][tx] = 0;
-    if ((ph * TILEWIDTH + ty < row_B) && (idx < col_B))
-      Bd[ty][tx] = B[(ty + ph * TILEWIDTH) * col_B + idx];
+      Ad[tx][ty] = 0;
+    if (((ph * TILEWIDTH + tx) < row_B) && (idy < col_B))
+      Bd[tx][ty] = B[(tx + ph * TILEWIDTH) * col_B + idy];
     else
-      Bd[ty][tx] = 0;
+      Bd[tx][ty] = 0;
     __syncthreads();
 
     for (size_t k = 0; k < TILEWIDTH; k++) {
-      value += Ad[ty][k] * Bd[k][tx];
+      value += Ad[tx][k] * Bd[k][ty];
     }
     __syncthreads();
   }
-  if ((idy < row_A) && (idx < col_B))
-    C[idy * col_B + idx] = value;
+  if ((idx < row_A) && (idy < col_B))
+    C[idx * col_B + idy] = value;
 }
 
 /* ---------------------------------------------------------------- */
@@ -108,7 +108,7 @@ void gpuTiledMatrixMultiplication(const int *A, const int *B, int *C,
   dim3 grid_dimension(ceil(float(row_A) / threads_per_block),
                       ceil(float(col_B) / threads_per_block));
 
-  // printKernelData(block_dimension, grid_dimension);
+  printKernelData(block_dimension, grid_dimension);
 
   // Call the kernel
   gpuTiledKernel<<<grid_dimension, block_dimension>>>(a_d, b_d, c_d, row_A,

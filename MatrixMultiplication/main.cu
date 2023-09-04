@@ -59,10 +59,12 @@ __global__ void testKernel() {}
 /* ---------------------------------------------------------------- */
 int main() {
 
+  // const size_t row_A = 1024, row_B = 2048, col_A = 2048, col_B = 728;
+  // const size_t row_A = 512, row_B = 256, col_A = 256, col_B = 512;
   const size_t row_A = 1024, row_B = 2048, col_A = 2048, col_B = 1024;
-  // const size_t row_A = 4, row_B = 4, col_A = 4, col_B = 4;
-  // const size_t row_A = 3, row_B = 2, col_A = 2, col_B = 3;
-  // const size_t row_A = 512, row_B = 512, col_A = 512, col_B = 512;
+  // const size_t row_A = 512, row_B = 256, col_A = 256, col_B = 512;
+  // const size_t row_A = 3, row_B = 3, col_A = 3, col_B = 7;
+  // const size_t row_A = 2048, row_B = 2048, col_A = 2048, col_B = 2048;
 
   int *A, *B, *C_cpu, *C_gpu;
   A = (int *)malloc(row_A * col_A * sizeof(int));
@@ -137,9 +139,9 @@ int main() {
 
   error_check(C_cpu, C_gpu, row_A, col_B);
 
-  std::cout << " ----------------------------- " << std::endl;
-  std::cout << " ---- Error checking done ---- " << std::endl;
-  std::cout << " ----------------------------- " << std::endl;
+  std::cout << " --------------------------------- " << std::endl;
+  std::cout << " ---- Error checking passed!! ---- " << std::endl;
+  std::cout << " --------------------------------- " << std::endl;
 
   // free the variables
   free(A);

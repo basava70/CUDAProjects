@@ -55,7 +55,7 @@ void error_check(const int *C_h, const int *C_d, const size_t row_A,
   const double tolerance = 1e-4;
   for (size_t i = 0; i < row_A; i++) {
     for (size_t j = 0; j < col_B; j++) {
-      if (C_h[i * col_B + j] - C_d[i * col_B + j] > tolerance) {
+      if (abs(C_h[i * col_B + j] - C_d[i * col_B + j]) > tolerance) {
         std::cout << "Error C_cpu(" << i << ", " << j
                   << ") = " << C_h[i * col_B + j] << " and C_gpu(" << i << ", "
                   << j << ") = " << C_d[i * col_B + j] << std::endl;
