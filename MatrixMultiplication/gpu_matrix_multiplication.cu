@@ -23,7 +23,6 @@ __global__ void gpuKernel(const int *a, const int *b, int *c,
 void gpuMatrixMultiplication(const int *A, const int *B, int *C,
                              const size_t row_A, const size_t row_B,
                              const size_t col_B) {
-
   // Creating device variables for all the three matrices
   int *a_d, *b_d, *c_d;
 
