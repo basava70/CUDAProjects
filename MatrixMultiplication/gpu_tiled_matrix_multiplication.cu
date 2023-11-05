@@ -1,9 +1,10 @@
 
 
 #define TILEWIDTH 32
-void cudaErrorCheck(cudaError_t error, bool abort = true);
-
-void printKernelData(dim3 blockDim, dim3 gridDim);
+#include "utility.h"
+// void cudaErrorCheck(cudaError_t error, bool abort = true);
+//
+// void printKernelData(dim3 blockDim, dim3 gridDim);
 
 /**
   * Consider the example with TILEWIDTH 2 and A, B are square matrices of
@@ -64,7 +65,7 @@ __global__ void gpuTiledKernel(const int *A, const int *B, int *C,
 
   int value = 0;
   // Adding boundary conditions
-  for (size_t ph = 0; ph < ceil(row_B / (float)TILEWIDTH); ph++) {
+  for (size_t ph = 0; ph < ceil(row_B / static_cast<float>(TILEWIDTH)); ph++) {
     if ((idx < row_A) && ((ph * TILEWIDTH + ty) < row_B))
       Ad[tx][ty] = A[idx * row_B + ty + ph * TILEWIDTH];
     else
@@ -88,14 +89,16 @@ __global__ void gpuTiledKernel(const int *A, const int *B, int *C,
 void gpuTiledMatrixMultiplication(const int *A, const int *B, int *C,
                                   const size_t row_A, const size_t row_B,
                                   const size_t col_B) {
-
   // Creating device variables for all the three matrices
   int *a_d, *b_d, *c_d;
 
   // Allocating memory for device variables
-  cudaErrorCheck(cudaMalloc((void **)&a_d, row_A * row_B * sizeof(int)));
-  cudaErrorCheck(cudaMalloc((void **)&b_d, row_B * col_B * sizeof(int)));
-  cudaErrorCheck(cudaMalloc((void **)&c_d, row_A * col_B * sizeof(int)));
+  cudaErrorCheck(
+      cudaMalloc(reinterpret_cast<void **>(&a_d), row_A * row_B * sizeof(int)));
+  cudaErrorCheck(
+      cudaMalloc(reinterpret_cast<void **>(&b_d), row_B * col_B * sizeof(int)));
+  cudaErrorCheck(
+      cudaMalloc(reinterpret_cast<void **>(&c_d), row_A * col_B * sizeof(int)));
 
   // Copying the two input matricws to device from host
   cudaErrorCheck(
@@ -105,8 +108,8 @@ void gpuTiledMatrixMultiplication(const int *A, const int *B, int *C,
 
   const size_t threads_per_block = TILEWIDTH;
   dim3 block_dimension(threads_per_block, threads_per_block);
-  dim3 grid_dimension(ceil(float(row_A) / threads_per_block),
-                      ceil(float(col_B) / threads_per_block));
+  dim3 grid_dimension(ceil(static_cast<float>(row_A) / threads_per_block),
+                      ceil(static_cast<float>(col_B) / threads_per_block));
 
   printKernelData(block_dimension, grid_dimension);
 

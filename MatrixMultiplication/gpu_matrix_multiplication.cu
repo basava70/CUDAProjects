@@ -1,7 +1,8 @@
 
-void cudaErrorCheck(cudaError_t error, bool abort = true);
-
-void printKernelData(dim3 blockDim, dim3 gridDim);
+#include "utility.h"
+// void cudaErrorCheck(cudaError_t error, bool abort = true);
+//
+// void printKernelData(dim3 blockDim, dim3 gridDim);
 
 /* ---------------------------------------------------------------- */
 __global__ void gpuKernel(const int *a, const int *b, int *c,
@@ -27,9 +28,12 @@ void gpuMatrixMultiplication(const int *A, const int *B, int *C,
   int *a_d, *b_d, *c_d;
 
   // Allocating memory for device variables
-  cudaErrorCheck(cudaMalloc((void **)&a_d, row_A * row_B * sizeof(int)));
-  cudaErrorCheck(cudaMalloc((void **)&b_d, row_B * col_B * sizeof(int)));
-  cudaErrorCheck(cudaMalloc((void **)&c_d, row_A * col_B * sizeof(int)));
+  cudaErrorCheck(
+      cudaMalloc(reinterpret_cast<void **>(&a_d), row_A * row_B * sizeof(int)));
+  cudaErrorCheck(
+      cudaMalloc(reinterpret_cast<void **>(&b_d), row_B * col_B * sizeof(int)));
+  cudaErrorCheck(
+      cudaMalloc(reinterpret_cast<void **>(&c_d), row_A * col_B * sizeof(int)));
 
   // Copying the input matrices from host to device
   cudaErrorCheck(
@@ -39,8 +43,8 @@ void gpuMatrixMultiplication(const int *A, const int *B, int *C,
 
   const size_t threads_per_block = 32;
   dim3 block_dimension(threads_per_block, threads_per_block);
-  dim3 grid_dimension(ceil(float(row_A) / threads_per_block),
-                      ceil(float(col_B) / threads_per_block));
+  dim3 grid_dimension(ceil(static_cast<float>(row_A) / threads_per_block),
+                      ceil(static_cast<float>(col_B) / threads_per_block));
 
   printKernelData(block_dimension, grid_dimension);
 

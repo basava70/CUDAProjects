@@ -31,34 +31,16 @@
  **/
 
 /* ---------------------------------------------------------------- */
+#include "utility.h"
 #include <chrono>
 #include <iostream>
 
-void initialize_data(int *A, int *B, int *C_cpu, int *C_gpu, const size_t row_A,
-                     const size_t row_B, const size_t col_B);
-
-void error_check(const int *C_h, const int *C_d, const size_t row_A,
-                 const size_t col_B);
-
-void print_matrix(const int *A, const size_t row_A, const size_t col_A);
-
-void gpuMatrixMultiplication(const int *A, const int *B, int *C,
-                             const size_t row_A, const size_t row_B,
-                             const size_t col_B);
-
-void gpuTiledMatrixMultiplication(const int *A, const int *B, int *C,
-                                  const size_t row_A, const size_t row_B,
-                                  const size_t col_B);
-
-void cpuMatrixMultiplication(const int *A, const int *B, int *C,
-                             const size_t row_A, const size_t row_B,
-                             const size_t col_B);
-
+/* running a testKernel to make sure we get correct time estimate
+ * for the next kernels */
 __global__ void testKernel() {}
 
 /* ---------------------------------------------------------------- */
 int main() {
-
   // const size_t row_A = 1024, row_B = 2048, col_A = 2048, col_B = 728;
   // const size_t row_A = 512, row_B = 256, col_A = 256, col_B = 512;
   const size_t row_A = 1024, row_B = 2048, col_A = 2048, col_B = 1024;
@@ -67,10 +49,10 @@ int main() {
   // const size_t row_A = 2048, row_B = 2048, col_A = 2048, col_B = 2048;
 
   int *A, *B, *C_cpu, *C_gpu;
-  A = (int *)malloc(row_A * col_A * sizeof(int));
-  B = (int *)malloc(row_B * col_B * sizeof(int));
-  C_cpu = (int *)malloc(row_A * col_B * sizeof(int));
-  C_gpu = (int *)malloc(row_A * col_B * sizeof(int));
+  A = reinterpret_cast<int *>(malloc(row_A * col_A * sizeof(int)));
+  B = reinterpret_cast<int *>(malloc(row_B * col_B * sizeof(int)));
+  C_cpu = reinterpret_cast<int *>(malloc(row_A * col_B * sizeof(int)));
+  C_gpu = reinterpret_cast<int *>(malloc(row_A * col_B * sizeof(int)));
 
   if (row_B != col_A) {
     std::cout << " row_b != col_A " << std::endl;
